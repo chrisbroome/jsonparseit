@@ -1,0 +1,14 @@
+{
+  "name": "json-parser",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js package.json",
+    "test": "node index.js test.json",
+    "bigtest": "node index.js all.json"
+  },
+  "author": "",
+  "license": "MIT"
+}
