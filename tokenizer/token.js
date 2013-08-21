@@ -16,6 +16,9 @@ Token.prototype = {
   value: void 0,
   length: 0,
   toString: function() {
+    return this.value;
+  },
+  toDescriptor: function() {
     return this.type + ' ' + this.length + ': ' + this.value + '\n';
   }
 };
