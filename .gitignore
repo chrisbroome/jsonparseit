@@ -1,0 +1,7 @@
+# Ignore Aptana Studio project files
+.project
+
+# Ignore temporary editor files
+*.swp
+*~
+
