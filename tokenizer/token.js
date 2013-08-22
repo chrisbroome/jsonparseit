@@ -5,6 +5,7 @@ function Token(options) {
   this.value = opts.value;
   this.type = opts.type;
   this.length = opts.length;
+  this.position = opts.position;
 }
 
 Token.create = function(options) {
@@ -14,12 +15,10 @@ Token.create = function(options) {
 Token.prototype = {
   type: void 0,
   value: void 0,
+  position: 0,
   length: 0,
   toString: function() {
     return this.value;
-  },
-  toDescriptor: function() {
-    return this.type + ' ' + this.length + ': ' + this.value + '\n';
   }
 };
 

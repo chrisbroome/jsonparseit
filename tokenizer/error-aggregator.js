@@ -8,17 +8,22 @@ var p = ErrorAggregator.prototype;
 p._transform = transform;
 p._flush = flush;
 p.joinErrors = joinErrors;
+p.position = 0;
 
 function ErrorAggregator(options) {
+  options = options || {};
+  options.objectMode = true;
   Transform.call(this, options);
+  this.position = 0;
   this.errors = [];
   this.lastChunkWasError = false;
 }
 
 function transform(c, encoding, callback) {
+  this.position = 0;
   if( c.type === 'error' ) {
     this.lastChunkWasError = true;
-    this.errors.push(c.value);
+    this.errors.push(c);
   } else {
     if( this.lastChunkWasError === true ) {
       this.joinErrors();
@@ -37,8 +42,11 @@ function flush(callback) {
 }
 
 function joinErrors() {
-  var value = this.errors.join('');
-  this.push(Token.create({value: value, length: value.length, type: 'error'}));
+  var position = this.errors[0].position;
+  var value = this.errors.reduce(function(a, c){ return a + c.value; }, '');
+  var t = Token.create({value: value, length: value.length, type: 'error', position: position});
+  this.emit('errorAggregate', t);
+  this.push(t);
   this.lastChunkWasError = false;
 }
 

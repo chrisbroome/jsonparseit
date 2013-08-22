@@ -1,24 +1,35 @@
 var fs = require('fs');
 var Tokenizer = require('./tokenizer');
 var ErrorAggregator = require('./tokenizer/error-aggregator');
-var WsFilter = require('./tokenizer/ws-filter');
 
 var stream = require('stream');
 
 var filename = process.argv[2];
+var inputStream = filename ? fs.createReadStream(filename) : process.stdin;
 
-if(!filename) throw new Error('Filename is required');
+var tokenizer = new Tokenizer;
+tokenizer.on('token', function(token) {
+  var t  = token.type;
+  if( t !== 'error' && t !== 'ws' ) {
+    console.log('token: ', token);
+  }
+});
+tokenizer.on('token', function(token) {
+  if( token.type == 'error') {
+    console.error('error: ', token);
+  }
+});
+
+var errors = new ErrorAggregator;
+// errors.on('errorAggregate', function(error){
+  // console.error('error: ', error);
+// });
 
 var pipeline = [
-  new Tokenizer({objectMode: true}),
-  new ErrorAggregator({objectMode: true}),
-  new WsFilter({objectMode: true}),
-  new stream.PassThrough({objectMode: true, encoding: 'utf-8'}),
-  process.stdout
+  tokenizer,
+  errors,
 ];
-
-var stream = fs.createReadStream(filename);
 
 pipeline.reduce(function(a, next) {
   return a.pipe(next);
-}, stream);
+}, inputStream);
