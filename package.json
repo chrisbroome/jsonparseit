@@ -10,5 +10,8 @@
     "bigtest": "node index.js all.json"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^2.4.1"
+  }
 }
