@@ -1,25 +1,21 @@
-var util = require('util');
+
+module.exports = Token;
 
 function Token(options) {
   var opts = options || {};
   this.value = opts.value;
   this.type = opts.type;
-  this.length = opts.length;
-  this.position = opts.position;
+  this.length = opts.length || 0;
+  this.position = opts.position || 0;
 }
 
 Token.create = function(options) {
+  if (options instanceof Token) return options;
   return new Token(options);
 };
 
 Token.prototype = {
-  type: void 0,
-  value: void 0,
-  position: 0,
-  length: 0,
   toString: function() {
-    return this.value;
+    return this.position + ' ' + this.length + ' ' + this.type + ' ' + this.value;
   }
 };
-
-module.exports = Token;

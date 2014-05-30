@@ -1,101 +1,88 @@
-var os = require('os');
-var util = require('util');
-var Token = require('./token');
-var Transform = require('stream').Transform;
-util.inherits(Tokenizer, Transform);
+'use strict';
 
-var p = Tokenizer.prototype;
-p._transform = transform;
-p._flush = flush;
-p.position = 0;
-p.match = match;
-p.matchers = {
-  'objectStart': /^(\{)/,
-  'objectEnd': /^(\})/,
-  'colon': /^(:)/,
-  'comma': /^(,)/,
-  'arrayStart': /^(\[)/,
-  'arrayEnd': /^(\])/,
-  'true': /^(true)/,
-  'false': /^(false)/,
-  'null': /^(null)/,
-  'ws': /^(\s+)/,
-  'number': /^(-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?)/,
-  'emptyString': /^("")/,
-  'nonEmptyString': /^("((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+")/,
-  'nonTerminatedString': /^("((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+)/,
-  'nonInitiatedString': /^(((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+")/,
-};
-p.matcherNames = Object.keys(p.matchers);
-p.processChunk = processChunk;
-
-function Tokenizer(options) {
-  options = options || {};
-  options.objectMode = true;
-  Transform.call(this, options);
-  this.tokens = [];
-  this.position = 0;
-  this.temp = '';
-}
-
-function transform(chunk, encoding, callback) {
-  this.processChunk(this.temp + chunk.utf8Slice());
-  callback();
-}
-
-function flush(callback) {
-  callback();
-}
-
-function processChunk(chunk) {
-  var i = 0, token, n = chunk.length;
-  var match = null;
-  var slice = null;
-  while( i < n ) {
-    slice = chunk.slice(i);
-    match = this.match(slice);
-    if( i + match.length >= n ) {
-      this.temp = slice;
-      break;
-    }
-    token = Token.create(match);
-    i += token.length;
-    this.position += token.length;
-    this.push(token);
-    this.emit('token', token);
-  }
-}
-
-function match(chunk) {
-  var position = this.position;
-  var matcher = null;
-  var match = null;
-  var m = null;
-  var i = 0;
-  var n = this.matcherNames.length;
-  var name = null;
-  while( i < n && m === null ) {
-    name = this.matcherNames[i];
-    matcher = this.matchers[name];
-    m = chunk.match(matcher);
-    if( m ) {
-      var match = m[1];
-      var token = Token.create({
-        value: match,
-        type: name,
-        length: match.length,
-        position: position
-      });
-      return token;
-    }
-    i += 1;
-  }
-  return Token.create({
-    value: chunk[0],
-    type: 'error',
-    length: 1,
-    position: position
-  });
-}
+var
+  _ = require('lodash'),
+  util = require('util'),
+  Transform = require('stream').Transform,
+  Token = require('./token'),
+  matchers = require('./matchers'),
+  matcherNames = Object.keys(matchers),
+  matcherLength = matcherNames.length;
 
 module.exports = Tokenizer;
+
+util.inherits(Tokenizer, Transform);
+
+function Tokenizer(options) {
+  var opts = options || {};
+  opts.objectMode = true;
+  Transform.call(this, opts);
+  this.lastSlice = '';
+  this.position = 0;
+  this.matcherNames = matcherNames;
+  this.matchers = matchers;
+  this.matcherLength = matcherLength;
+}
+
+_.extend(Tokenizer.prototype, {
+  _flush: function flush(cb) {
+    var slice = this.lastSlice;
+    this.processChunk(slice);
+    cb();
+  },
+
+  _transform: function transform(chunk, encoding, cb) {
+    var slice = this.lastSlice + chunk.slice();
+    this.processChunk(slice);
+    cb();
+  },
+
+  // instance methods
+  findMatch: function findMatch(slice) {
+    var name, matcher, match, i = 0, position = this.position;
+    do {
+      name = this.matcherNames[i];
+      matcher = this.matchers[name];
+      match = slice.match(matcher);
+      i++;
+    } while (match === null && i < this.matcherLength);
+    if (match === null) {
+      return {
+        length: slice.length,
+        position: position,
+        type: 'error',
+        value: slice
+      };
+    }
+    var capture = match[1];
+    return {
+      length: capture.length,
+      position: position,
+      type: name,
+      value: capture
+    };
+  },
+
+  createToken: function createToken(slice) {
+    var match = this.findMatch(slice);
+    return Token.create(match);
+  },
+
+  processChunk: function processChunk(chunk) {
+    if (!chunk || chunk.length === 0) return;
+    var token, slice = chunk.slice();
+    do {
+      token = this.createToken(slice);
+      if(token.type === 'error') {
+      }
+      else {
+        this.push(token);
+      }
+      this.emit('token:' + token.type, token);
+      this.position += token.length;
+      this.lastSlice = slice;
+      slice = slice.slice(token.length);
+    } while (slice.length > 0);
+  }
+
+});

@@ -20,7 +20,6 @@ function ErrorAggregator(options) {
 }
 
 function transform(c, encoding, callback) {
-  this.position = 0;
   if( c.type === 'error' ) {
     this.lastChunkWasError = true;
     this.errors.push(c);

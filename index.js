@@ -1,35 +1,24 @@
-var fs = require('fs');
-var Tokenizer = require('./tokenizer');
-var ErrorAggregator = require('./tokenizer/error-aggregator');
+'use strict';
+var
+  fs = require('fs'),
+  Tokenizer = require('./tokenizer'),
+  filename = process.argv[2],
+  inputStream = filename ? fs.createReadStream(filename) : process.stdin,
+  tokenizer = new Tokenizer;
 
-var stream = require('stream');
-
-var filename = process.argv[2];
-var inputStream = filename ? fs.createReadStream(filename) : process.stdin;
-
-var tokenizer = new Tokenizer;
-tokenizer.on('token', function(token) {
-  var t  = token.type;
-  if( t !== 'error' && t !== 'ws' ) {
-    console.log('token: ', token);
-  }
-});
-tokenizer.on('token', function(token) {
-  if( token.type == 'error') {
-    console.error('error: ', token);
-  }
+tokenizer.on('error', function(err, next) {
+  console.error('tokenizer:error:', err);
+  next();
 });
 
-var errors = new ErrorAggregator;
-// errors.on('errorAggregate', function(error){
-  // console.error('error: ', error);
-// });
+tokenizer.on('data', function(token) {
+  if (token.type !== 'ws')
+    console.dir(token);
+});
 
-var pipeline = [
-  tokenizer,
-  errors,
-];
+inputStream.on('error', function(err, next) {
+  console.error('inputStream:error:', err);
+  next();
+});
 
-pipeline.reduce(function(a, next) {
-  return a.pipe(next);
-}, inputStream);
+inputStream.pipe(tokenizer);
