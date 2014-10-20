@@ -1,12 +1,12 @@
 'use strict';
 
 var
-  _ = require('lodash'),
   util = require('util'),
   Transform = require('stream').Transform,
+  _ = require('lodash'),
   Token = require('./token'),
   matchers = require('./matchers'),
-  matcherNames = Object.keys(matchers),
+  matcherNames = _.keys(matchers),
   matcherLength = matcherNames.length;
 
 module.exports = Tokenizer;
@@ -19,6 +19,8 @@ function Tokenizer(options) {
   Transform.call(this, opts);
   this.lastSlice = '';
   this.position = 0;
+  this.line = 1;
+  this.column = 0;
   this.matcherNames = matcherNames;
   this.matchers = matchers;
   this.matcherLength = matcherLength;
@@ -48,7 +50,9 @@ _.extend(Tokenizer.prototype, {
     } while (match === null && i < this.matcherLength);
     if (match === null) {
       return {
+        column: this.column,
         length: slice.length,
+        line: this.line,
         position: position,
         type: 'error',
         value: slice
@@ -56,7 +60,9 @@ _.extend(Tokenizer.prototype, {
     }
     var capture = match[1];
     return {
+      column: this.column,
       length: capture.length,
+      line: this.line,
       position: position,
       type: name,
       value: capture
@@ -65,7 +71,7 @@ _.extend(Tokenizer.prototype, {
 
   createToken: function createToken(slice) {
     var match = this.findMatch(slice);
-    return Token.create(match);
+    return new Token(match);
   },
 
   processChunk: function processChunk(chunk) {
@@ -73,13 +79,18 @@ _.extend(Tokenizer.prototype, {
     var token, slice = chunk.slice();
     do {
       token = this.createToken(slice);
-      if(token.type === 'error') {
+      if (token.type === 'nl') {
+        this.line += 1;
+        this.column = 0;
+      }
+      else if (token.type === 'error') {
       }
       else {
         this.push(token);
       }
       this.emit('token:' + token.type, token);
       this.position += token.length;
+      this.column += token.length;
       this.lastSlice = slice;
       slice = slice.slice(token.length);
     } while (slice.length > 0);

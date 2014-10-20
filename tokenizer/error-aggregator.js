@@ -43,7 +43,7 @@ function flush(callback) {
 function joinErrors() {
   var position = this.errors[0].position;
   var value = this.errors.reduce(function(a, c){ return a + c.value; }, '');
-  var t = Token.create({value: value, length: value.length, type: 'error', position: position});
+  var t = new Token({value: value, length: value.length, type: 'error', position: position});
   this.emit('errorAggregate', t);
   this.push(t);
   this.lastChunkWasError = false;

@@ -13,7 +13,7 @@ tokenizer.on('error', function(err, next) {
 
 tokenizer.on('data', function(token) {
   if (token.type !== 'ws')
-    console.dir(token);
+    console.log(token.toString());
 });
 
 inputStream.on('error', function(err, next) {

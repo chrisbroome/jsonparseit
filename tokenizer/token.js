@@ -3,19 +3,15 @@ module.exports = Token;
 
 function Token(options) {
   var opts = options || {};
-  this.value = opts.value;
-  this.type = opts.type;
+  this.column = opts.column;
   this.length = opts.length || 0;
+  this.line = opts.line;
   this.position = opts.position || 0;
+  this.type = opts.type;
+  this.value = opts.value;
 }
-
-Token.create = function(options) {
-  if (options instanceof Token) return options;
-  return new Token(options);
-};
-
 Token.prototype = {
-  toString: function() {
-    return this.position + ' ' + this.length + ' ' + this.type + ' ' + this.value;
+  toString: function toString() {
+    return '(' + this.line + ':' + this.column + ')[' + this.type + "] '" + this.value + "'";
   }
 };
