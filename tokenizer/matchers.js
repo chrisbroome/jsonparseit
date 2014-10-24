@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   colon: /^(:)/,
   comma: /^(,)/,
@@ -16,6 +17,3 @@ module.exports = {
   doubleQuote: /^(")/,
   chars: /^(((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+)/
 };
-//  nonEmptyString:      /^("((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+")/,
-//  nonTerminatedString: /^("((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+)/,
-//  nonInitiatedString:   /^(((?:\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))|[^"\\])+")/
