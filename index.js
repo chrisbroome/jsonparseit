@@ -1,7 +1,7 @@
 'use strict';
 var
   fs = require('fs'),
-  Tokenizer = require('./tokenizer'),
+  Tokenizer = require('./lib/tokenizer'),
   filename = process.argv[2],
   inputStream = filename ? fs.createReadStream(filename) : process.stdin,
   tokenizer = new Tokenizer;
