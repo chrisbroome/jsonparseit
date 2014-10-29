@@ -8,10 +8,24 @@
   "g": -0.3e+5,
   "h": -0.3e-5,
   "blah": "\u2713",
+  "0": 0,
+  "1": 1,
+  "null": null,
+  "false": false,
+  "true": true,
+  "key with nested spaces": "string value with some keywords in it null true false 0 1",
   "stuff": [0, "1", null, false, true, {"a": 1}],
   "whitespace": "\"\\\/\b\f\n\r\t\u2713",
   "nested": {
-    "": "I'm empty!"
+    "": "I'm empty!",
+    "emptyObject": {},
+    "emptyArray": [],
+    "a": [0],
+    "b": ["1"],
+    "c": [null],
+    "d": [false],
+    "e": [true],
+    "nestedObjectsAndArrays": [{}, [{}], [], [], {}]
   },
   "UpperAndLowerCaseText": "hi!"
 }
