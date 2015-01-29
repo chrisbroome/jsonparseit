@@ -1,3 +1,6 @@
+# Ignore build output
+/out
+
 # Ignore Aptana Studio project files
 .project
 

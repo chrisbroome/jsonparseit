@@ -13,5 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "~3.0.0"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.3.0-beta1"
   }
 }
