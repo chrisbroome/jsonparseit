@@ -3,7 +3,7 @@ var
   util = require('util'),
   fs = require('fs'),
   Tokenizer = require('./lib/tokenizer'),
-  Parser = require('./lib/parser'),
+  Parser = require('./lib/recursive-descent-parser'),
   filename = process.argv[2],
   inputStream = filename ? fs.createReadStream(filename) : process.stdin,
   tokenizer = new Tokenizer,
