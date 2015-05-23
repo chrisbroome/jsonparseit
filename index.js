@@ -6,7 +6,7 @@ var
   Parser = require('./lib/recursive-descent-parser'),
   filename = process.argv[2],
   inputStream = filename ? fs.createReadStream(filename) : process.stdin,
-  tokenizer = new Tokenizer(require('./lib/tokenizer/matchers'), require('./lib/token-factory')),
+  tokenizer = new Tokenizer(require('./lib/tokens/matchers'), require('./lib/token-factory')),
   parser = new Parser({tokenizer: tokenizer});
 
 tokenizer.on('error', function(err) {
