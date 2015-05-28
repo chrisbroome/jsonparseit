@@ -1,12 +1,12 @@
 {
   "name": "jsonparseit",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A JSON parser",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js package.json",
-    "test": "node index.js ./test/fixtures/test.json",
-    "bigtest": "node index.js ./test/fixtures/all.json"
+    "start": "node ./test/index.js ./package.json",
+    "test": "node ./test/index.js ./test/fixtures/test.json",
+    "bigtest": "node ./test/index.js ./test/fixtures/all.json"
   },
   "license": "MIT",
   "author": {
@@ -15,8 +15,8 @@
   },
   "repository": "https://github.com/chrisbroome/json-parser",
   "dependencies": {
-    "lexit": "^1.0.0",
-    "lodash": "~3.9.0"
+    "lexit": "^2.1.1",
+    "lodash": "^3.9.3"
   },
   "devDependencies": {
     "jsdoc": "^3.3.0-beta1"
