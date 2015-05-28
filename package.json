@@ -13,7 +13,7 @@
     "name": "Chris Broome",
     "email": "chrisbroome7@gmail.com"
   },
-  "repository": "https://github.com/chrisbroome/json-parser",
+  "repository": "https://github.com/chrisbroome/jsonparseit",
   "dependencies": {
     "lexit": "^2.1.1",
     "lodash": "^3.9.3"
